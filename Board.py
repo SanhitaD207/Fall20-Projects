@@ -1,4 +1,4 @@
-from Helper import print_board_is_valid, print_board_cell_value
+from Helper import print_board_is_valid, print_board_cell_value, get_single_step_moves
 
 
 class BoardCell:
@@ -81,24 +81,31 @@ class Board:
         print_board_is_valid(self.board)
 
 
-    def get_goose_available_moves(self):
+    def get_goose_available_moves(self, r, c):
         # TODO - Single cell movement for goose
         # TODO - preference to move that leads to surrounding a fox
+        available_single_step_moves = get_single_step_moves(self.board, r, c)
+        print(available_single_step_moves)
         pass
 
 
-    def get_fox_available_moves(self):
+    def get_fox_available_moves(self, r, c):
         # TODO - Preference to move that leads to killing goose
         # TODO - Single cell movement if no goose/elephant
         # TODO - Preference to move that leads to surrounding an elephant if close to other fox
+        available_single_step_moves = get_single_step_moves(self.board, r, c)
+        print(available_single_step_moves)
         pass
 
 
-    def get_elephant_available_moves(self):
+    def get_elephant_available_moves(self, r, c):
         # TODO - Single cell movement for elephant
         # TODO - preference to move that leads to surrounding a fox
+        available_single_step_moves = get_single_step_moves(self.board, r, c)
+        print(available_single_step_moves)
         pass
 
 
 board = Board()
 # board.set_invalid_points_on_board()
+# board.get_goose_available_moves(4, 1)
