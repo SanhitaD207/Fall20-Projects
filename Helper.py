@@ -33,13 +33,13 @@ def get_hop_moves(board, row, col):
         diff_i, diff_j = tuple(np.subtract((row, col), (r, c)))
 
         if diff_i == 0 and diff_j == 1 and c - 1 > -1 and not board[r][c - 1].cell_value:
-            hop_moves.append([(r, c - 1), (r, c)])
+            hop_moves.append((r, c - 1))
         elif diff_i == 0 and diff_j == -1 and c + 1 < ncols and not board[r][c + 1].cell_value:
-            hop_moves.append([(r, c + 1), (r, c)])
+            hop_moves.append((r, c + 1))
         elif diff_j == 0 and diff_i == 1 and r - 1 > -1 and not board[r - 1][c].cell_value:
-            hop_moves.append([(r - 1, c), (r, c)])
+            hop_moves.append((r - 1, c))
         elif diff_j == 0 and diff_i == -1 and r + 1 < nrows and not board[r + 1][c].cell_value:
-            hop_moves.append([(r + 1, c), (r, c)])
+            hop_moves.append((r + 1, c))
 
     return hop_moves
 
@@ -82,8 +82,9 @@ def print_board_is_valid(board):
     ncols = len(board[0])
     for i in range(nrows):
         for j in range(ncols):
-            print(board[i][j].is_valid_cell, end="\t")
-        print("")
+            print(board[i][j].is_valid_cell, end='\t')
+        print('')
+    print('')
 
 
 def print_board_cell_value(board):
@@ -91,5 +92,6 @@ def print_board_cell_value(board):
     ncols = len(board[0])
     for i in range(nrows):
         for j in range(ncols):
-            print(board[i][j].cell_value if board[i][j].cell_value else '_', end="\t")
-        print("")
+            print(board[i][j].cell_value if board[i][j].cell_value else '_', end='\t')
+        print('')
+    print('')

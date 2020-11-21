@@ -1,4 +1,5 @@
-from Helper import print_board_is_valid, print_board_cell_value, get_single_step_moves
+from Helper import print_board_is_valid, print_board_cell_value
+from Player import GeeseElephantPlayer, FoxPlayer
 
 
 class BoardCell:
@@ -14,7 +15,7 @@ class BoardCell:
 
 class Board:
 
-    def __init__(self):
+    def __init__(self, fox_collection, geese_collection, elephant_collection):
         self.nrows = 7
         self.ncols = 7
 
@@ -22,51 +23,44 @@ class Board:
 
         self.set_invalid_points_on_board()
 
-        self.fox_collection = {}
-        self.geese_collection = {}
-        self.elephant_collection = {}
-
-        self.set_foxes_initial_position()
-        self.set_elephant_initial_position()
-        self.set_goose_initial_position()
+        self.set_foxes_initial_position(fox_collection)
+        self.set_elephant_initial_position(elephant_collection)
+        self.set_geese_initial_position(geese_collection)
 
 
-    def set_foxes_initial_position(self):
+    def set_foxes_initial_position(self, fox_collection):
         self.board[3][2].cell_value = 'F'
-        self.fox_collection['fox_1'] = (3, 2)
+        fox_collection['fox_1'] = {'current_pos': (3, 2)}
 
         self.board[3][4].cell_value = 'F'
-        self.fox_collection['fox_2'] = (3, 4)
+        fox_collection['fox_2'] = {'current_pos': (3, 4)}
 
         print_board_cell_value(self.board)
-        print(self.fox_collection)
 
 
-    def set_elephant_initial_position(self):
+    def set_elephant_initial_position(self, elephant_collection):
         self.board[4][0].cell_value = 'E'
-        self.elephant_collection['ele_1'] = (4, 0)
+        elephant_collection['ele_1'] = {'current_pos': (4, 0)}
 
         self.board[4][6].cell_value = 'E'
-        self.elephant_collection['ele_2'] = (4, 6)
+        elephant_collection['ele_2'] = {'current_pos': (4, 6)}
 
         self.board[6][3].cell_value = 'E'
-        self.elephant_collection['ele_2'] = (6, 3)
+        elephant_collection['ele_3'] = {'current_pos': (6, 3)}
 
         print_board_cell_value(self.board)
-        print(self.elephant_collection)
 
 
-    def set_goose_initial_position(self):
+    def set_geese_initial_position(self, geese_collection):
         count = 1
         for i in range(4, self.nrows, 1):
             for j in range(self.ncols):
                 if self.board[i][j].is_valid_cell and self.board[i][j].cell_value is None:
                     self.board[i][j].cell_value = 'G'
-                    self.geese_collection['ge_{}'.format(count)] = (i, j)
+                    geese_collection['ge_{}'.format(count)] = {'current_pos': (i, j)}
                     count += 1
 
         print_board_cell_value(self.board)
-        print(self.geese_collection)
 
 
     def set_invalid_points_on_board(self):
@@ -81,31 +75,16 @@ class Board:
         print_board_is_valid(self.board)
 
 
-    def get_goose_available_moves(self, r, c):
-        # TODO - Single cell movement for goose
-        # TODO - preference to move that leads to surrounding a fox
-        available_single_step_moves = get_single_step_moves(self.board, r, c)
-        print(available_single_step_moves)
-        pass
+g_e_player = GeeseElephantPlayer()
+f_player = FoxPlayer()
+board = Board(f_player.fox_collection, g_e_player.geese_collection, g_e_player.elephant_collection)
 
+print('\nFox Collection: ', f_player.fox_collection)
+print('\nGeese Collection: ', g_e_player.geese_collection)
+print('\nElephant Collection: ', g_e_player.elephant_collection)
 
-    def get_fox_available_moves(self, r, c):
-        # TODO - Preference to move that leads to killing goose
-        # TODO - Single cell movement if no goose/elephant
-        # TODO - Preference to move that leads to surrounding an elephant if close to other fox
-        available_single_step_moves = get_single_step_moves(self.board, r, c)
-        print(available_single_step_moves)
-        pass
+f_player.get_fox_available_moves(board.board)
+g_e_player.get_goose_available_moves(board.board)
+g_e_player.get_elephant_available_moves(board.board)
 
-
-    def get_elephant_available_moves(self, r, c):
-        # TODO - Single cell movement for elephant
-        # TODO - preference to move that leads to surrounding a fox
-        available_single_step_moves = get_single_step_moves(self.board, r, c)
-        print(available_single_step_moves)
-        pass
-
-
-board = Board()
-# board.set_invalid_points_on_board()
 # board.get_goose_available_moves(4, 1)
