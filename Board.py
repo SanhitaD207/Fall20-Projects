@@ -30,23 +30,23 @@ class Board:
 
     def set_foxes_initial_position(self, fox_collection):
         self.board[3][2].cell_value = 'F'
-        fox_collection['fox_1'] = {'current_pos': (3, 2)}
+        fox_collection['fox_1'] = (3, 2)
 
         self.board[3][4].cell_value = 'F'
-        fox_collection['fox_2'] = {'current_pos': (3, 4)}
+        fox_collection['fox_2'] = (3, 4)
 
         print_board_cell_value(self.board)
 
 
     def set_elephant_initial_position(self, elephant_collection):
         self.board[4][0].cell_value = 'E'
-        elephant_collection['ele_1'] = {'current_pos': (4, 0)}
+        elephant_collection['ele_1'] = (4, 0)
 
         self.board[4][6].cell_value = 'E'
-        elephant_collection['ele_2'] = {'current_pos': (4, 6)}
+        elephant_collection['ele_2'] = (4, 6)
 
         self.board[6][3].cell_value = 'E'
-        elephant_collection['ele_3'] = {'current_pos': (6, 3)}
+        elephant_collection['ele_3'] = (6, 3)
 
         print_board_cell_value(self.board)
 
@@ -57,7 +57,7 @@ class Board:
             for j in range(self.ncols):
                 if self.board[i][j].is_valid_cell and self.board[i][j].cell_value is None:
                     self.board[i][j].cell_value = 'G'
-                    geese_collection['ge_{}'.format(count)] = {'current_pos': (i, j)}
+                    geese_collection['ge_{}'.format(count)] = (i, j)
                     count += 1
 
         print_board_cell_value(self.board)
