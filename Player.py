@@ -2,7 +2,7 @@ from Helper import get_single_step_moves, get_hop_moves
 
 
 class Player:
-    def move(self, board, r, c, **kwargs):
+    def move(self):
         pass
 
 
@@ -11,10 +11,8 @@ class GeeseElephantPlayer(Player):
         self.geese_collection = {}
         self.elephant_collection = {}
 
-
-    def move(self, board, r, c, **kwargs):
+    def move(self):
         pass
-
 
     def get_goose_available_moves(self, board):
         # TODO - Single cell movement for goose
@@ -25,7 +23,6 @@ class GeeseElephantPlayer(Player):
             print(f'\n{key} available moves: ', moves[key])
 
         return moves
-
 
     def get_elephant_available_moves(self, board):
         # TODO - Single cell movement for elephant
@@ -42,10 +39,8 @@ class FoxPlayer(Player):
     def __init__(self):
         self.fox_collection = {}
 
-
-    def move(self, board, r, c, **kwargs):
+    def move(self):
         pass
-
 
     def get_fox_available_moves(self, board):
         # TODO - Preference to move that leads to killing goose

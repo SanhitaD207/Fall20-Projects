@@ -8,7 +8,6 @@ class BoardCell:
         self.cell_value = cell_value
         self.is_valid_cell = True
 
-
     def reset_is_valid(self):
         self.is_valid_cell = False
 
@@ -27,7 +26,6 @@ class Board:
         self.set_elephant_initial_position(elephant_collection)
         self.set_geese_initial_position(geese_collection)
 
-
     def set_foxes_initial_position(self, fox_collection):
         self.board[3][2].cell_value = 'F'
         fox_collection['fox_1'] = (3, 2)
@@ -36,7 +34,6 @@ class Board:
         fox_collection['fox_2'] = (3, 4)
 
         print_board_cell_value(self.board)
-
 
     def set_elephant_initial_position(self, elephant_collection):
         self.board[4][0].cell_value = 'E'
@@ -50,7 +47,6 @@ class Board:
 
         print_board_cell_value(self.board)
 
-
     def set_geese_initial_position(self, geese_collection):
         count = 1
         for i in range(4, self.nrows, 1):
@@ -61,7 +57,6 @@ class Board:
                     count += 1
 
         print_board_cell_value(self.board)
-
 
     def set_invalid_points_on_board(self):
 
