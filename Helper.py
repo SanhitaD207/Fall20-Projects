@@ -78,22 +78,51 @@ def is_elephant_surrounded(board, row, col):
 
 
 def print_board_is_valid(board):
-    nrows = board.nrows
-    ncols = board.ncols
+    nrows = len(board)
+    ncols = len(board[0])
 
     for i in range(nrows):
         for j in range(ncols):
-            print(board.board[i][j].is_valid_cell, end='\t')
+            print(board[i][j].is_valid_cell, end='\t')
         print('')
     print('')
 
 
 def print_board_cell_value(board):
-    nrows = board.nrows
-    ncols = board.ncols
+    nrows = len(board)
+    ncols = len(board[0])
 
     for i in range(nrows):
         for j in range(ncols):
-            print(board.board[i][j].cell_value if board.board[i][j].cell_value else '_', end='\t')
+            print(board[i][j].cell_value if board[i][j].cell_value else '_', end='\t')
         print('')
     print('')
+
+
+def parse_input_move(move):
+    board_piece = move.split(" ")[0]
+    board_piece_final_location = (int(move.split(" ")[1][1]), int(move.split(" ")[1][3]))
+    return board_piece, board_piece_final_location
+
+
+def remove_dead_animal(board, row, col, animal_collection):
+    board.board[row][col].cell_value = None
+    val = (row, col)
+    required_key = None
+    for key, value in animal_collection.items():
+        if val == value:
+            required_key = key
+            print("Animal found", key)
+    animal_collection.pop(required_key, None)
+    print(animal_collection)
+    print_board_cell_value(board.board)
+
+
+def remove_dead_foxes_and_elephants(board, fox_collection, elephant_collection):
+    for fox_row, fox_col in list(fox_collection.values()):
+        if is_fox_surrounded(board, fox_row, fox_col):
+            remove_dead_animal(board, fox_row, fox_col, fox_collection)
+
+    for ele_row, ele_col in list(elephant_collection.values()):
+        if is_fox_surrounded(board, ele_row, ele_col):
+            remove_dead_animal(board, ele_row, ele_col, elephant_collection)
