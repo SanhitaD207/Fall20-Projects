@@ -14,18 +14,27 @@ class Game_Play():
     def is_game_over(self):
         if not self.f_player.fox_collection:
             self.winning_player = "2"
+            print("GE player Won!")
             return True
 
         if not self.g_e_player.geese_collection and not self.g_e_player.elephant_collection:
             self.winning_player = "1"
+            print("F player Won!")
             return True
 
         if len(self.g_e_player.elephant_collection) < 2 and not self.g_e_player.geese_collection:
             self.winning_player = "1"
+            print("F player Won!")
             return True
 
         if len(self.g_e_player.geese_collection) < 4 and not self.g_e_player.elephant_collection:
             self.winning_player = "1"
+            print("F player Won!")
+            return True
+
+        if len(self.f_player.fox_collection) == 1 and len(self.g_e_player.elephant_collection) > 1:
+            self.winning_player = "2"
+            print("GE player Won!")
             return True
 
         return False

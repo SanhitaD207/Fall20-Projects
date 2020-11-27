@@ -69,10 +69,10 @@ def is_elephant_surrounded(board, row, col):
     for r, c in adjacent_coordinates:
         if r > nrows - 1 or c > ncols - 1 or r < 0 or c < 0 or not board.board[r][c].is_valid_cell:
             continue
-        if fox_count > 1:
-            return True
         elif board.board[r][c].cell_value == 'F':
             fox_count += 1
+            if fox_count > 1:
+                return True
 
     return False
 
@@ -124,5 +124,5 @@ def remove_dead_foxes_and_elephants(board, fox_collection, elephant_collection):
             remove_dead_animal(board, fox_row, fox_col, fox_collection)
 
     for ele_row, ele_col in list(elephant_collection.values()):
-        if is_fox_surrounded(board, ele_row, ele_col):
+        if is_elephant_surrounded(board, ele_row, ele_col):
             remove_dead_animal(board, ele_row, ele_col, elephant_collection)
