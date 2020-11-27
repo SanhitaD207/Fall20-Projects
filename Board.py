@@ -69,17 +69,16 @@ class Board:
 
         print_board_is_valid(self.board)
 
-
-g_e_player = GeeseElephantPlayer()
-f_player = FoxPlayer()
-board = Board(f_player.fox_collection, g_e_player.geese_collection, g_e_player.elephant_collection)
-
-print('\nFox Collection: ', f_player.fox_collection)
-print('\nGeese Collection: ', g_e_player.geese_collection)
-print('\nElephant Collection: ', g_e_player.elephant_collection)
-
-f_player.get_fox_available_moves(board.board)
-g_e_player.get_goose_available_moves(board.board)
-g_e_player.get_elephant_available_moves(board.board)
+# g_e_player = GeeseElephantPlayer()
+# f_player = FoxPlayer()
+# board = Board(f_player.fox_collection, g_e_player.geese_collection, g_e_player.elephant_collection)
+#
+# print('\nFox Collection: ', f_player.fox_collection)
+# print('\nGeese Collection: ', g_e_player.geese_collection)
+# print('\nElephant Collection: ', g_e_player.elephant_collection)
+#
+# f_player.get_fox_available_moves(board.board)
+# g_e_player.get_goose_available_moves(board.board)
+# g_e_player.get_elephant_available_moves(board.board)
 
 # board.get_goose_available_moves(4, 1)

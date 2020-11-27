@@ -38,6 +38,10 @@ class Game_Play():
         # Reference  - TictacToe Game from Assignment 4
 
         while not self.is_game_over():
-            self.f_player.move()
+            self.f_player.move(self.board)
             if not self.is_game_over():
-                self.g_e_player.move()
+                self.g_e_player.move(self.board)
+
+
+game = Game_Play()
+game.play_game()

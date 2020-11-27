@@ -2,7 +2,7 @@ from Helper import get_single_step_moves, get_hop_moves
 
 
 class Player:
-    def move(self):
+    def move(self, board):
         pass
 
 
@@ -11,8 +11,10 @@ class GeeseElephantPlayer(Player):
         self.geese_collection = {}
         self.elephant_collection = {}
 
-    def move(self):
-        pass
+    def move(self, board):
+        all_moves = self.get_goose_available_moves(board)
+        all_moves.update(self.get_elephant_available_moves(board))
+        print("All moves GE:", all_moves)
 
     def get_goose_available_moves(self, board):
         # TODO - Single cell movement for goose
@@ -20,7 +22,7 @@ class GeeseElephantPlayer(Player):
         moves = {}
         for key, val in self.geese_collection.items():
             moves[key] = get_single_step_moves(board, *val)
-            print(f'\n{key} available moves: ', moves[key])
+            # print(f'\n{key} available moves: ', moves[key])
 
         return moves
 
@@ -30,7 +32,7 @@ class GeeseElephantPlayer(Player):
         moves = {}
         for key, val in self.elephant_collection.items():
             moves[key] = get_single_step_moves(board, *val)
-            print(f'\n{key} available moves: ', moves[key])
+            # print(f'\n{key} available moves: ', moves[key])
 
         return moves
 
@@ -39,8 +41,9 @@ class FoxPlayer(Player):
     def __init__(self):
         self.fox_collection = {}
 
-    def move(self):
-        pass
+    def move(self, board):
+        all_moves = self.get_fox_available_moves(board)
+        print("All moves F:", all_moves)
 
     def get_fox_available_moves(self, board):
         # TODO - Preference to move that leads to killing goose
@@ -49,6 +52,6 @@ class FoxPlayer(Player):
         moves = {}
         for key, val in self.fox_collection.items():
             moves[key] = get_hop_moves(board, *val) + get_single_step_moves(board, *val)
-            print(f'\n{key} available moves: ', moves[key])
+            # print(f'\n{key} available moves: ', moves[key])
 
         return moves
