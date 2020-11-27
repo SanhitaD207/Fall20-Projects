@@ -45,18 +45,21 @@ def get_hop_moves(board, row, col):
 
 
 def is_fox_surrounded(board, row, col):
-    adjacent_coordinates = [(row, col - 1), (row, col + 1), (row - 1, col), (row + 1, col)]
+    if not get_single_step_moves(board, row, col) and not get_hop_moves(board, row, col):
+        adjacent_coordinates = [(row, col - 1), (row, col + 1), (row - 1, col), (row + 1, col)]
 
-    nrows = board.nrows
-    ncols = board.ncols
+        nrows = board.nrows
+        ncols = board.ncols
 
-    for r, c in adjacent_coordinates:
-        if r > nrows - 1 or c > ncols - 1 or r < 0 or c < 0 or not board.board[r][c].is_valid_cell:
-            continue
-        if not board.board[r][c].cell_value:
-            return False
+        for r, c in adjacent_coordinates:
+            if r > nrows - 1 or c > ncols - 1 or r < 0 or c < 0 or not board.board[r][c].is_valid_cell:
+                continue
+            if board.board[r][c].cell_value == 'F':
+                return False
 
-    return True
+        return True
+
+    return False
 
 
 def is_elephant_surrounded(board, row, col):

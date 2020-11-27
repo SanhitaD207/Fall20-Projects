@@ -1,5 +1,4 @@
 from Helper import print_board_is_valid, print_board_cell_value
-from Player import GeeseElephantPlayer, FoxPlayer
 
 
 class BoardCell:
@@ -7,6 +6,7 @@ class BoardCell:
     def __init__(self, cell_value=None):
         self.cell_value = cell_value
         self.is_valid_cell = True
+
 
     def reset_is_valid(self):
         self.is_valid_cell = False
@@ -26,6 +26,7 @@ class Board:
         self.set_elephant_initial_position(elephant_collection)
         self.set_geese_initial_position(geese_collection)
 
+
     def set_foxes_initial_position(self, fox_collection):
         self.board[3][2].cell_value = 'F'
         fox_collection['fox_1'] = (3, 2)
@@ -34,6 +35,7 @@ class Board:
         fox_collection['fox_2'] = (3, 4)
 
         print_board_cell_value(self.board)
+
 
     def set_elephant_initial_position(self, elephant_collection):
         self.board[4][0].cell_value = 'E'
@@ -47,6 +49,7 @@ class Board:
 
         print_board_cell_value(self.board)
 
+
     def set_geese_initial_position(self, geese_collection):
         count = 1
         for i in range(4, self.nrows, 1):
@@ -58,6 +61,7 @@ class Board:
 
         print_board_cell_value(self.board)
 
+
     def set_invalid_points_on_board(self):
 
         for i in range(self.nrows):
@@ -68,6 +72,7 @@ class Board:
                     self.board[i][j].is_valid_cell = True
 
         print_board_is_valid(self.board)
+
 
 # g_e_player = GeeseElephantPlayer()
 # f_player = FoxPlayer()
