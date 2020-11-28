@@ -6,10 +6,19 @@ class Player:
         pass
 
 
+    def move_ai(self, board, animal_collection, board_piece, move):
+        pass
+
+
+    def move_piece(self, board, board_piece, board_piece_final_location, animal_collection=None, is_ai_player=False):
+        pass
+
+
 class GeeseElephantPlayer(Player):
     def __init__(self):
         self.geese_collection = {}
         self.elephant_collection = {}
+
 
     def move(self, board):
         all_moves = self.get_goose_available_moves(board)
@@ -23,11 +32,21 @@ class GeeseElephantPlayer(Player):
         self.move_piece(board, board_piece, board_piece_final_location)
         print_board_cell_value(board.board)
 
-    def move_piece(self, board, board_piece, board_piece_final_location):
-        if 'ge' in board_piece:
-            row, col = self.geese_collection[board_piece]
+
+    def move_ai(self, board, animal_collection, board_piece, move):
+        self.move_piece(board, board_piece, move, animal_collection, True)
+        print_board_cell_value(board.board)
+
+
+    def move_piece(self, board, board_piece, board_piece_final_location, animal_collection=None, is_ai_player=False):
+
+        if not is_ai_player:
+            if 'ge' in board_piece:
+                row, col = self.geese_collection[board_piece]
+            else:
+                row, col = self.elephant_collection[board_piece]
         else:
-            row, col = self.elephant_collection[board_piece]
+            row, col = animal_collection[board_piece]
 
         piece_cell_value = board.board[row][col].cell_value
         board.board[row][col].cell_value = None
@@ -35,22 +54,29 @@ class GeeseElephantPlayer(Player):
         row, col = board_piece_final_location
         board.board[row][col].cell_value = piece_cell_value
 
-        if 'ge' in board_piece:
-            self.geese_collection[board_piece] = (row, col)
+        if not is_ai_player:
+            if 'ge' in board_piece:
+                self.geese_collection[board_piece] = (row, col)
+            else:
+                self.elephant_collection[board_piece] = (row, col)
         else:
-            self.elephant_collection[board_piece] = (row, col)
+            animal_collection[board_piece] = (row, col)
 
-    def get_goose_available_moves(self, board):
+
+    def get_goose_available_moves(self, board, geese_collection=None, is_ai_player=False):
         moves = {}
-        for key, val in self.geese_collection.items():
+        available_pieces = geese_collection.items() if is_ai_player else self.geese_collection.items()
+        for key, val in available_pieces:
             moves[key] = get_single_step_moves(board, *val)
             # print(f'\n{key} available moves: ', moves[key])
 
         return moves
 
-    def get_elephant_available_moves(self, board):
+
+    def get_elephant_available_moves(self, board, elephant_collection=None, is_ai_player=False):
         moves = {}
-        for key, val in self.elephant_collection.items():
+        available_pieces = elephant_collection.items() if is_ai_player else self.elephant_collection.items()
+        for key, val in available_pieces:
             moves[key] = get_single_step_moves(board, *val)
             # print(f'\n{key} available moves: ', moves[key])
 
@@ -60,6 +86,7 @@ class GeeseElephantPlayer(Player):
 class FoxPlayer(Player):
     def __init__(self):
         self.fox_collection = {}
+
 
     def move(self, board):
         all_moves = self.get_fox_available_moves(board)
@@ -72,9 +99,19 @@ class FoxPlayer(Player):
         print_board_cell_value(board.board)
         return goose_row, goose_col
 
-    def move_piece(self, board, board_piece, board_piece_final_location):
 
-        row_initial, col_initial = self.fox_collection[board_piece]
+    def move_ai(self, board, animal_collection, board_piece, move):
+        goose_row, goose_col = self.move_piece(board, board_piece, move, animal_collection, True)
+        print_board_cell_value(board.board)
+        return goose_row, goose_col
+
+
+    def move_piece(self, board, board_piece, board_piece_final_location, animal_collection=None, is_ai_player=False):
+
+        if is_ai_player:
+            row_initial, col_initial = animal_collection[board_piece]
+        else:
+            row_initial, col_initial = self.fox_collection[board_piece]
 
         piece_cell_value = board.board[row_initial][col_initial].cell_value
         board.board[row_initial][col_initial].cell_value = None
@@ -91,12 +128,19 @@ class FoxPlayer(Player):
             goose_col = col_initial
 
         board.board[row_final][col_final].cell_value = piece_cell_value
-        self.fox_collection[board_piece] = (row_final, col_final)
+
+        if is_ai_player:
+            animal_collection[board_piece] = (row_final, col_final)
+        else:
+            self.fox_collection[board_piece] = (row_final, col_final)
+
         return goose_row, goose_col
 
-    def get_fox_available_moves(self, board):
+
+    def get_fox_available_moves(self, board, fox_collection=None, is_ai_player=False):
         moves = {}
-        for key, val in self.fox_collection.items():
+        available_moves = fox_collection.items() if is_ai_player else self.fox_collection.items()
+        for key, val in available_moves:
             moves[key] = get_hop_moves(board, *val) + get_single_step_moves(board, *val)
             # print(f'\n{key} available moves: ', moves[key])
 
