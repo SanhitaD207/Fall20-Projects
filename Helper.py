@@ -32,13 +32,17 @@ def get_hop_moves(board, row, col):
             continue
         diff_i, diff_j = tuple(np.subtract((row, col), (r, c)))
 
-        if diff_i == 0 and diff_j == 1 and c - 1 > -1 and not board.board[r][c - 1].cell_value:
+        if diff_i == 0 and diff_j == 1 and c - 1 > -1 and not board.board[r][c - 1].cell_value and \
+                board.board[r][c - 1].is_valid_cell:
             hop_moves.append((r, c - 1))
-        elif diff_i == 0 and diff_j == -1 and c + 1 < ncols and not board.board[r][c + 1].cell_value:
+        elif diff_i == 0 and diff_j == -1 and c + 1 < ncols and not board.board[r][c + 1].cell_value and \
+                board.board[r][c + 1].is_valid_cell:
             hop_moves.append((r, c + 1))
-        elif diff_j == 0 and diff_i == 1 and r - 1 > -1 and not board.board[r - 1][c].cell_value:
+        elif diff_j == 0 and diff_i == 1 and r - 1 > -1 and not board.board[r - 1][c].cell_value and \
+                board.board[r - 1][c].is_valid_cell:
             hop_moves.append((r - 1, c))
-        elif diff_j == 0 and diff_i == -1 and r + 1 < nrows and not board.board[r + 1][c].cell_value:
+        elif diff_j == 0 and diff_i == -1 and r + 1 < nrows and not board.board[r + 1][c].cell_value and \
+                board.board[r + 1][c].is_valid_cell:
             hop_moves.append((r + 1, c))
 
     return hop_moves

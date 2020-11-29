@@ -316,4 +316,4 @@ class GamePlay:
 
 
 game = GamePlay()
-game.play_game(True)
+game.play_game()

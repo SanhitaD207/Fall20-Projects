@@ -44,8 +44,8 @@ class Board:
         self.board[4][6].cell_value = 'E'
         elephant_collection['ele_2'] = (4, 6)
 
-        self.board[6][3].cell_value = 'E'
-        elephant_collection['ele_3'] = (6, 3)
+        self.board[4][3].cell_value = 'E'
+        elephant_collection['ele_3'] = (4, 3)
 
         print_board_cell_value(self.board)
 
