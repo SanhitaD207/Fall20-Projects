@@ -120,6 +120,7 @@ def remove_dead_animal(board, row, col, animal_collection):
         if val == value:
             required_key = key
             print("Animal found", key)
+            break
     animal_collection.pop(required_key, None)
     print(animal_collection)
     print_board_cell_value(board.board)

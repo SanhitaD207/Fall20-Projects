@@ -1,4 +1,5 @@
 from copy import deepcopy
+from random import choice
 
 from Board import Board
 from Helper import remove_dead_animal, remove_dead_foxes_and_elephants
@@ -134,7 +135,7 @@ class GamePlay:
                 value -= self.UTILITY['g_e']['captured_f']
 
             if len(opp_c_i.items()) > len(opp_c_f.items()):
-                animals_captured = [x for x in opp_c_f if x not in opp_c_i]
+                animals_captured = [x for x in opp_c_i if x not in opp_c_f]
 
                 for animal in animals_captured:
                     value += self.UTILITY['f'][f'captured_{animal[0]}']
@@ -143,13 +144,13 @@ class GamePlay:
 
         else:
             if len(opp_c_i.items()) > len(opp_c_f.items()):
-                value += self.UTILITY['g_e']['captured_f']
+                value -= self.UTILITY['g_e']['captured_f']
 
             if len(player_c_i.items()) > len(player_c_f.items()):
-                animals_captured = [x for x in player_c_f if x not in player_c_i]
+                animals_captured = [x for x in player_c_i if x not in player_c_f]
 
                 for animal in animals_captured:
-                    value -= self.UTILITY['f'][f'captured_{animal[0]}']
+                    value += self.UTILITY['f'][f'captured_{animal[0]}']
             else:
                 value += self.UTILITY['g_e']['neutral']
 
@@ -160,91 +161,91 @@ class GamePlay:
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
             return self.calculate_heuristic(player, player_c_i, player_c_f, opp_c_i, opp_c_f)
 
-        node_value = float('inf')
+        max_node_value = float('inf')
 
-        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, initial_board)
+        _, _, available_moves = self.fetch_minimax_game_state(player, initial_board)
 
         for board_piece, moves in available_moves.items():
             for move in moves:
-                player_c_f = deepcopy(player_c_i)
-                opp_c_f = deepcopy(opp_c_i)
+                local_player_c_f = deepcopy(player_c_f)
+                local_opp_c_f = deepcopy(opp_c_f)
                 board = deepcopy(initial_board)
                 if player == 'f':
-                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_f, board_piece, move)
+                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, local_player_c_f, board_piece, move)
                     if dead_goose_row:
-                        remove_dead_animal(board, dead_goose_row, dead_goose_col, opp_c_f)
+                        remove_dead_animal(board, dead_goose_row, dead_goose_col, local_opp_c_f)
 
-                    elephant_collection = {k: v for k, v in opp_c_f.items() if 'ele' in k}
-                    remove_dead_foxes_and_elephants(board, player_c_f, elephant_collection)
+                    elephant_collection = {k: v for k, v in local_opp_c_f.items() if 'ele' in k}
+                    remove_dead_foxes_and_elephants(board, local_player_c_f, elephant_collection)
 
-                    geese_collection = {k: v for k, v in opp_c_f.items() if 'ge' in k}
-                    opp_c_f = {**geese_collection, **elephant_collection}
+                    geese_collection = {k: v for k, v in local_opp_c_f.items() if 'ge' in k}
+                    local_opp_c_f = {**geese_collection, **elephant_collection}
 
                 else:
-                    self.g_e_player.move_ai(board, player_c_f, board_piece, move)
+                    self.g_e_player.move_ai(board, local_player_c_f, board_piece, move)
 
-                    elephant_collection = {k: v for k, v in player_c_f.items() if 'ele' in k}
-                    remove_dead_foxes_and_elephants(board, opp_c_f, elephant_collection)
+                    elephant_collection = {k: v for k, v in local_player_c_f.items() if 'ele' in k}
+                    remove_dead_foxes_and_elephants(board, local_opp_c_f, elephant_collection)
 
-                    geese_collection = {k: v for k, v in player_c_f.items() if 'ge' in k}
-                    player_c_f = {**geese_collection, **elephant_collection}
+                    geese_collection = {k: v for k, v in local_player_c_f.items() if 'ge' in k}
+                    local_player_c_f = {**geese_collection, **elephant_collection}
 
-                node_value = max(node_value, self.min_play(board, 'ge' if player == 'f' else 'f',
-                                                           player_c_i, player_c_f,
-                                                           opp_c_i, opp_c_f,
-                                                           alpha, beta, d + 1))
+                max_node_value = max(max_node_value, self.min_play(board, 'ge' if player == 'f' else 'f',
+                                                                   opp_c_i, local_opp_c_f,
+                                                                   player_c_i, local_player_c_f,
+                                                                   alpha, beta, d + 1))
                 # if node_value >= beta:
                 #     # print('val:{} move:{}'.format(node_value, move)) # To debug
                 #     return node_value
                 # alpha = max(alpha, node_value)
         # print('didnt pruned')
-        return node_value
+        return max_node_value
 
     def min_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
             return self.calculate_heuristic(player, player_c_i, player_c_f, opp_c_i, opp_c_f)
 
-        node_value = float('inf')
+        min_node_value = float('inf')
 
-        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, initial_board)
+        _, _, available_moves = self.fetch_minimax_game_state(player, initial_board)
 
         for board_piece, moves in available_moves.items():
             for move in moves:
-                player_c_f = deepcopy(player_c_i)
-                opp_c_f = deepcopy(opp_c_i)
+                local_player_c_f = deepcopy(player_c_f)
+                local_opp_c_f = deepcopy(opp_c_f)
                 board = deepcopy(initial_board)
                 if player == 'f':
-                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_f, board_piece, move)
+                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, local_player_c_f, board_piece, move)
                     if dead_goose_row:
-                        remove_dead_animal(board, dead_goose_row, dead_goose_col, opp_c_f)
+                        remove_dead_animal(board, dead_goose_row, dead_goose_col, local_opp_c_f)
 
-                    elephant_collection = {k: v for k, v in opp_c_f.items() if 'ele' in k}
-                    remove_dead_foxes_and_elephants(board, player_c_f, elephant_collection)
+                    elephant_collection = {k: v for k, v in local_opp_c_f.items() if 'ele' in k}
+                    remove_dead_foxes_and_elephants(board, local_player_c_f, elephant_collection)
 
-                    geese_collection = {k: v for k, v in opp_c_f.items() if 'ge' in k}
-                    opp_c_f = {**geese_collection, **elephant_collection}
+                    geese_collection = {k: v for k, v in local_opp_c_f.items() if 'ge' in k}
+                    local_opp_c_f = {**geese_collection, **elephant_collection}
 
                 else:
-                    self.g_e_player.move_ai(board, player_c_f, board_piece, move)
+                    self.g_e_player.move_ai(board, local_player_c_f, board_piece, move)
 
-                    elephant_collection = {k: v for k, v in player_c_f.items() if 'ele' in k}
-                    remove_dead_foxes_and_elephants(board, opp_c_f, elephant_collection)
+                    elephant_collection = {k: v for k, v in local_player_c_f.items() if 'ele' in k}
+                    remove_dead_foxes_and_elephants(board, local_opp_c_f, elephant_collection)
 
-                    geese_collection = {k: v for k, v in player_c_f.items() if 'ge' in k}
-                    player_c_f = {**geese_collection, **elephant_collection}
+                    geese_collection = {k: v for k, v in local_player_c_f.items() if 'ge' in k}
+                    local_player_c_f = {**geese_collection, **elephant_collection}
 
-                node_value = min(node_value, self.max_play(board, 'ge' if player == 'f' else 'f',
-                                                           player_c_i, player_c_f,
-                                                           opp_c_i, opp_c_f,
-                                                           alpha, beta, d + 1))
+                min_node_value = min(min_node_value, self.max_play(board, 'ge' if player == 'f' else 'f',
+                                                                   opp_c_i, local_opp_c_f,
+                                                                   player_c_i, local_player_c_f,
+                                                                   alpha, beta, d + 1))
 
                 # if node_value <= alpha:
                 #     # print('val:{} move:{}'.format(node_value, move)) # To debug
                 #     return node_value
                 # beta = min(beta, node_value)
         # print('didnt pruned')
-        return node_value
+        return min_node_value
 
     def minimax(self, player, depth=2):
         """
@@ -257,15 +258,18 @@ class GamePlay:
 
         alpha = float('-inf')
         beta = float('inf')
-        node_value = float('-inf')
+
+        if player == 'ge':
+            node_value = float('-inf')
+        else:
+            node_value = float('inf')
 
         initial_board = deepcopy(self.board)
 
         player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, initial_board)
 
-        board_piece, moves = list(available_moves.items())[0]
         next_move = []
-        next_board_piece = board_piece
+        next_board_piece = []
 
         for board_piece, moves in available_moves.items():
             for move in moves:
@@ -293,15 +297,24 @@ class GamePlay:
                     player_c_f = {**geese_collection, **elephant_collection}
 
                 neighbor_value = self.min_play(board, 'ge' if player == 'f' else 'f',
-                                               player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, 1)
+                                               opp_c_i, opp_c_f, player_c_i, player_c_f, alpha, beta, 1)
                 # print('child {}/{}: '.format(i, len(state.available_moves)))
-                if (node_value == float('-inf') and neighbor_value > node_value) or \
-                        (abs(neighbor_value) > abs(node_value)):
+                # if (node_value == float('-inf') and neighbor_value > node_value) or \
+                #         (abs(neighbor_value) > abs(node_value)):
+                if (player == 'ge' and neighbor_value >= node_value) or \
+                        (player == 'f' and neighbor_value <= node_value):
+                    if neighbor_value == node_value:
+                        next_board_piece.append(board_piece)
+                        next_move.append(move)
+                    else:
+                        next_board_piece = [board_piece]
+                        next_move = [move]
+
                     node_value = neighbor_value
-                    next_board_piece = board_piece
-                    next_move = move
+
                 # alpha = max(alpha, node_value)
-        return next_board_piece, next_move
+        idx = choice(range(len(next_board_piece)))
+        return next_board_piece[idx], next_move[idx]
 
     def fetch_minimax_game_state(self, player, board):
         if player == 'f':
