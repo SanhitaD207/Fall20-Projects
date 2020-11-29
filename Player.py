@@ -30,12 +30,12 @@ class GeeseElephantPlayer(Player):
         best_move = input("Enter the best move (format - fox_1 (3,2)) ")
         board_piece, board_piece_final_location = parse_input_move(best_move)
         self.move_piece(board, board_piece, board_piece_final_location)
-        print_board_cell_value(board.board)
+        # print_board_cell_value(board.board)
 
 
     def move_ai(self, board, animal_collection, board_piece, move):
         self.move_piece(board, board_piece, move, animal_collection, True)
-        print_board_cell_value(board.board)
+        # print_board_cell_value(board.board)
 
 
     def move_piece(self, board, board_piece, board_piece_final_location, animal_collection=None, is_ai_player=False):
@@ -96,13 +96,13 @@ class FoxPlayer(Player):
         best_move = input("Enter the best move (format - fox_1 (3,2)) ")
         board_piece, board_piece_final_location = parse_input_move(best_move)
         goose_row, goose_col = self.move_piece(board, board_piece, board_piece_final_location)
-        print_board_cell_value(board.board)
+        # print_board_cell_value(board.board)
         return goose_row, goose_col
 
 
     def move_ai(self, board, animal_collection, board_piece, move):
         goose_row, goose_col = self.move_piece(board, board_piece, move, animal_collection, True)
-        print_board_cell_value(board.board)
+        # print_board_cell_value(board.board)
         return goose_row, goose_col
 
 

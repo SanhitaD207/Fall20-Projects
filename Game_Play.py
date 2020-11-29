@@ -2,7 +2,7 @@ from copy import deepcopy
 from random import choice
 
 from Board import Board
-from Helper import remove_dead_animal, remove_dead_foxes_and_elephants
+from Helper import remove_dead_animal, remove_dead_foxes_and_elephants, print_board_cell_value
 from Player import GeeseElephantPlayer, FoxPlayer
 
 
@@ -105,6 +105,7 @@ class GamePlay:
                                        self.g_e_player.geese_collection)
                 remove_dead_foxes_and_elephants(self.board, self.f_player.fox_collection,
                                                 self.g_e_player.elephant_collection)
+                print_board_cell_value(self.board.board)
                 if not self.is_game_over():
                     ge_piece, ge_move = self.minimax('ge')
 
@@ -114,6 +115,7 @@ class GamePlay:
 
                     remove_dead_foxes_and_elephants(self.board, self.f_player.fox_collection,
                                                     self.g_e_player.elephant_collection)
+                    print_board_cell_value(self.board.board)
             else:
                 print('\n\nGame Winner is - {}'.format(self.is_game_over()))
 
