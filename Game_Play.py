@@ -22,12 +22,11 @@ class GamePlay:
                 'neutral': 100
             },
             'g_e': {
-                'captured_f': 500,
+                'captured_f': 1000,
                 'partial_blocked_f': 250,
                 'neutral': 100
             }
         }
-
 
     @staticmethod
     def is_game_end_state(animal_collection):
@@ -53,7 +52,6 @@ class GamePlay:
 
         return False
 
-
     def is_game_over(self):
 
         winning_player = ''
@@ -73,7 +71,6 @@ class GamePlay:
             winning_player = "GE"
 
         return winning_player
-
 
     def play_game(self, with_ai=False):
         """
@@ -99,10 +96,25 @@ class GamePlay:
                 print('\n\nGame Winner is - {}'.format(self.is_game_over()))
         else:
             while not self.is_game_over():
-                fox_move = self.minimax('f')
+                fox_piece, fox_move = self.minimax('f')
+                dead_goose_row, dead_goose_col = self.f_player.move_ai(self.board, self.f_player.fox_collection,
+                                                                       fox_piece, fox_move)
+                if dead_goose_row:
+                    remove_dead_animal(self.board, dead_goose_row, dead_goose_col,
+                                       self.g_e_player.geese_collection)
+                remove_dead_foxes_and_elephants(self.board, self.f_player.fox_collection,
+                                                self.g_e_player.elephant_collection)
+                if not self.is_game_over():
+                    ge_piece, ge_move = self.minimax('ge')
+
+                    self.g_e_player.move_ai(self.board,
+                                            self.g_e_player.geese_collection if 'ge' in ge_piece else self.g_e_player.elephant_collection,
+                                            ge_piece, ge_move)
+
+                    remove_dead_foxes_and_elephants(self.board, self.f_player.fox_collection,
+                                                    self.g_e_player.elephant_collection)
             else:
                 print('\n\nGame Winner is - {}'.format(self.is_game_over()))
-
 
     def calculate_heuristic(self, player, player_c_i, player_c_f, opp_c_i, opp_c_f):
         # TODO - Code to calculate heuristic value for player based on rules defined
@@ -141,26 +153,24 @@ class GamePlay:
             else:
                 value += self.UTILITY['g_e']['neutral']
 
-        return value
+        return value * -1
 
-
-    def max_play(self, board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
+    def max_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
             return self.calculate_heuristic(player, player_c_i, player_c_f, opp_c_i, opp_c_f)
 
         node_value = float('inf')
 
-        board = deepcopy(board)
-
-        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, board)
+        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, initial_board)
 
         for board_piece, moves in available_moves.items():
             for move in moves:
                 player_c_f = deepcopy(player_c_i)
                 opp_c_f = deepcopy(opp_c_i)
+                board = deepcopy(initial_board)
                 if player == 'f':
-                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_i, board_piece, move)
+                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_f, board_piece, move)
                     if dead_goose_row:
                         remove_dead_animal(board, dead_goose_row, dead_goose_col, opp_c_f)
 
@@ -171,7 +181,7 @@ class GamePlay:
                     opp_c_f = {**geese_collection, **elephant_collection}
 
                 else:
-                    self.g_e_player.move_ai(board, player_c_i, board_piece, move)
+                    self.g_e_player.move_ai(board, player_c_f, board_piece, move)
 
                     elephant_collection = {k: v for k, v in player_c_f.items() if 'ele' in k}
                     remove_dead_foxes_and_elephants(board, opp_c_f, elephant_collection)
@@ -183,31 +193,29 @@ class GamePlay:
                                                            player_c_i, player_c_f,
                                                            opp_c_i, opp_c_f,
                                                            alpha, beta, d + 1))
-                if node_value >= beta:
-                    # print('val:{} move:{}'.format(node_value, move)) # To debug
-                    return node_value
-                alpha = max(alpha, node_value)
+                # if node_value >= beta:
+                #     # print('val:{} move:{}'.format(node_value, move)) # To debug
+                #     return node_value
+                # alpha = max(alpha, node_value)
         # print('didnt pruned')
         return node_value
 
-
-    def min_play(self, board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
+    def min_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
             return self.calculate_heuristic(player, player_c_i, player_c_f, opp_c_i, opp_c_f)
 
         node_value = float('inf')
 
-        board = deepcopy(board)
-
-        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, board)
+        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, initial_board)
 
         for board_piece, moves in available_moves.items():
             for move in moves:
                 player_c_f = deepcopy(player_c_i)
                 opp_c_f = deepcopy(opp_c_i)
+                board = deepcopy(initial_board)
                 if player == 'f':
-                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_i, board_piece, move)
+                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_f, board_piece, move)
                     if dead_goose_row:
                         remove_dead_animal(board, dead_goose_row, dead_goose_col, opp_c_f)
 
@@ -218,7 +226,7 @@ class GamePlay:
                     opp_c_f = {**geese_collection, **elephant_collection}
 
                 else:
-                    self.g_e_player.move_ai(board, player_c_i, board_piece, move)
+                    self.g_e_player.move_ai(board, player_c_f, board_piece, move)
 
                     elephant_collection = {k: v for k, v in player_c_f.items() if 'ele' in k}
                     remove_dead_foxes_and_elephants(board, opp_c_f, elephant_collection)
@@ -230,13 +238,13 @@ class GamePlay:
                                                            player_c_i, player_c_f,
                                                            opp_c_i, opp_c_f,
                                                            alpha, beta, d + 1))
-                if node_value <= alpha:
-                    # print('val:{} move:{}'.format(node_value, move)) # To debug
-                    return node_value
-                beta = min(beta, node_value)
+
+                # if node_value <= alpha:
+                #     # print('val:{} move:{}'.format(node_value, move)) # To debug
+                #     return node_value
+                # beta = min(beta, node_value)
         # print('didnt pruned')
         return node_value
-
 
     def minimax(self, player, depth=2):
         """
@@ -251,19 +259,21 @@ class GamePlay:
         beta = float('inf')
         node_value = float('-inf')
 
-        board = deepcopy(self.board)
+        initial_board = deepcopy(self.board)
 
-        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, board)
+        player_c_i, opp_c_i, available_moves = self.fetch_minimax_game_state(player, initial_board)
 
         board_piece, moves = list(available_moves.items())[0]
-        next_move = (board_piece, moves[0])
+        next_move = []
+        next_board_piece = board_piece
 
         for board_piece, moves in available_moves.items():
             for move in moves:
                 player_c_f = deepcopy(player_c_i)
                 opp_c_f = deepcopy(opp_c_i)
+                board = deepcopy(initial_board)
                 if player == 'f':
-                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_i, board_piece, move)
+                    dead_goose_row, dead_goose_col = self.f_player.move_ai(board, player_c_f, board_piece, move)
                     if dead_goose_row:
                         remove_dead_animal(board, dead_goose_row, dead_goose_col, opp_c_f)
 
@@ -274,7 +284,7 @@ class GamePlay:
                     opp_c_f = {**geese_collection, **elephant_collection}
 
                 else:
-                    self.g_e_player.move_ai(board, player_c_i, board_piece, move)
+                    self.g_e_player.move_ai(board, player_c_f, board_piece, move)
 
                     elephant_collection = {k: v for k, v in player_c_f.items() if 'ele' in k}
                     remove_dead_foxes_and_elephants(board, opp_c_f, elephant_collection)
@@ -282,14 +292,16 @@ class GamePlay:
                     geese_collection = {k: v for k, v in player_c_f.items() if 'ge' in k}
                     player_c_f = {**geese_collection, **elephant_collection}
 
-                neighbor_value = self.min_play(board, alpha, beta, 1)
+                neighbor_value = self.min_play(board, 'ge' if player == 'f' else 'f',
+                                               player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, 1)
                 # print('child {}/{}: '.format(i, len(state.available_moves)))
-                if neighbor_value > node_value:
+                if (node_value == float('-inf') and neighbor_value > node_value) or \
+                        (abs(neighbor_value) > abs(node_value)):
                     node_value = neighbor_value
+                    next_board_piece = board_piece
                     next_move = move
-                alpha = max(alpha, node_value)
-        return next_move
-
+                # alpha = max(alpha, node_value)
+        return next_board_piece, next_move
 
     def fetch_minimax_game_state(self, player, board):
         if player == 'f':
@@ -316,4 +328,4 @@ class GamePlay:
 
 
 game = GamePlay()
-game.play_game()
+game.play_game(True)
