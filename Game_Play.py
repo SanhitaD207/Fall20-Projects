@@ -2,7 +2,7 @@ from copy import deepcopy
 from random import choice
 
 from Board import Board
-from Helper import remove_dead_animal, remove_dead_foxes_and_elephants, print_board_cell_value
+from Helper import remove_dead_animal, remove_dead_foxes_and_elephants, print_board_cell_value, get_hop_moves
 from Player import GeeseElephantPlayer, FoxPlayer
 
 
@@ -20,12 +20,14 @@ class GamePlay:
             'f': {
                 'captured_e': 500,
                 'captured_g': 250,
-                'neutral': 100
+                'can_capture_e': 300,
+                'can_capture_g': 200,
+                'neutral': 50
             },
             'g_e': {
-                'captured_f': 1000,
+                'captured_f': 500,
                 'partial_blocked_f': 250,
-                'neutral': 100
+                'neutral': 50
             }
         }
 
@@ -119,7 +121,61 @@ class GamePlay:
             else:
                 print('\n\nGame Winner is - {}'.format(self.is_game_over()))
 
-    def calculate_heuristic(self, player, player_c_i, player_c_f, opp_c_i, opp_c_f):
+    @staticmethod
+    def can_capture_goose(board, fox_collection):
+        for value in fox_collection.values():
+            row, col = value
+            if get_hop_moves(board, row, col):
+                return True
+
+        return False
+
+    @staticmethod
+    def can_capture_elephant(board, fox_collection):
+        nrows = board.nrows
+        ncols = board.ncols
+        for value in fox_collection.values():
+            row, col = value
+            adjacent_coordinates = [(row, col - 1), (row, col + 1), (row - 1, col), (row + 1, col)]
+
+            for r, c in adjacent_coordinates:
+                if r > nrows - 1 or c > ncols - 1 or r < 0 or c < 0 or not board.board[r][c].is_valid_cell:
+                    continue
+                if board.board[r][c].cell_value == 'E':
+                    return True
+
+        return False
+
+    @staticmethod
+    def can_partially_block_fox(board, fox_collection):
+        nrows = board.nrows
+        ncols = board.ncols
+        # count_blocked_sides = 0
+        for value in fox_collection.values():
+            count_blocked_sides = 0
+            row, col = value
+            adjacent_coordinates = [(row, col - 1), (row, col + 1), (row - 1, col), (row + 1, col)]
+
+            for r, c in adjacent_coordinates:
+                if r > nrows - 1 or c > ncols - 1 or r < 0 or c < 0 or not board.board[r][c].is_valid_cell:
+                    count_blocked_sides += 1
+                    continue
+                if board.board[r][c].cell_value == 'E':
+                    count_blocked_sides += 1
+                    continue
+                if not board.board[r][c].cell_value:
+                    count_blocked_sides -= 1
+                    continue
+
+            count_hop_moves = len(get_hop_moves(board, row, col))
+            count_blocked_sides = count_blocked_sides - 2 * count_hop_moves
+
+            if count_blocked_sides >= 0:
+                return True
+
+        return False
+
+    def calculate_heuristic(self, board, player, player_c_i, player_c_f, opp_c_i, opp_c_f):
         # TODO - Code to calculate heuristic value for player based on rules defined
         """
         Calculates the heuristic value at the end of the minimax execution
@@ -136,32 +192,44 @@ class GamePlay:
             if len(player_c_i.items()) > len(player_c_f.items()):
                 value -= self.UTILITY['g_e']['captured_f']
 
+            if self.can_capture_goose(board, player_c_f):
+                value += self.UTILITY['f']['can_capture_g']
+
+            if self.can_capture_elephant(board, player_c_f):
+                value += self.UTILITY['f']['can_capture_e']
+
             if len(opp_c_i.items()) > len(opp_c_f.items()):
                 animals_captured = [x for x in opp_c_i if x not in opp_c_f]
 
                 for animal in animals_captured:
                     value += self.UTILITY['f'][f'captured_{animal[0]}']
-            else:
-                value += self.UTILITY['f']['neutral']
+            # else:
+            #     value += self.UTILITY['f']['neutral']
 
         else:
             if len(opp_c_i.items()) > len(opp_c_f.items()):
                 value -= self.UTILITY['g_e']['captured_f']
+
+            if self.can_partially_block_fox(board, opp_c_f):
+                value -= self.UTILITY['g_e']['partial_blocked_f']
 
             if len(player_c_i.items()) > len(player_c_f.items()):
                 animals_captured = [x for x in player_c_i if x not in player_c_f]
 
                 for animal in animals_captured:
                     value += self.UTILITY['f'][f'captured_{animal[0]}']
-            else:
-                value += self.UTILITY['g_e']['neutral']
+            # else:
+            #     value += self.UTILITY['g_e']['neutral']
+
+        if value == 0:
+            return -50
 
         return value * -1
 
     def max_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
-            return self.calculate_heuristic(player, player_c_i, player_c_f, opp_c_i, opp_c_f)
+            return self.calculate_heuristic(initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f)
 
         max_node_value = float('inf')
 
@@ -206,7 +274,7 @@ class GamePlay:
     def min_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
-            return self.calculate_heuristic(player, player_c_i, player_c_f, opp_c_i, opp_c_f)
+            return self.calculate_heuristic(initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f)
 
         min_node_value = float('inf')
 
