@@ -31,6 +31,7 @@ class GamePlay:
             }
         }
 
+
     @staticmethod
     def is_game_end_state(animal_collection):
 
@@ -55,6 +56,7 @@ class GamePlay:
 
         return False
 
+
     def is_game_over(self):
 
         winning_player = ''
@@ -74,6 +76,7 @@ class GamePlay:
             winning_player = "GE"
 
         return winning_player
+
 
     def play_game(self, with_ai=False):
         """
@@ -121,6 +124,7 @@ class GamePlay:
             else:
                 print('\n\nGame Winner is - {}'.format(self.is_game_over()))
 
+
     @staticmethod
     def can_capture_goose(board, fox_collection):
         for value in fox_collection.values():
@@ -129,6 +133,7 @@ class GamePlay:
                 return True
 
         return False
+
 
     @staticmethod
     def can_capture_elephant(board, fox_collection):
@@ -145,6 +150,7 @@ class GamePlay:
                     return True
 
         return False
+
 
     @staticmethod
     def can_partially_block_fox(board, fox_collection):
@@ -175,6 +181,7 @@ class GamePlay:
 
         return False
 
+
     def calculate_heuristic(self, board, player, player_c_i, player_c_f, opp_c_i, opp_c_f):
         # TODO - Code to calculate heuristic value for player based on rules defined
         """
@@ -188,6 +195,8 @@ class GamePlay:
         """
 
         value = 0
+        # print('\nIn Heuristic Calculation\n')
+        # print_board_cell_value(board.board)
         if player == 'f':
             if len(player_c_i.items()) > len(player_c_f.items()):
                 value -= self.UTILITY['g_e']['captured_f']
@@ -226,6 +235,7 @@ class GamePlay:
 
         return value * -1
 
+
     def max_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
@@ -233,7 +243,7 @@ class GamePlay:
 
         max_node_value = float('inf')
 
-        _, _, available_moves = self.fetch_minimax_game_state(player, initial_board)
+        available_moves = self.fetch_minimax_internal_available_moves(player, initial_board, player_c_f)
 
         for board_piece, moves in available_moves.items():
             for move in moves:
@@ -271,6 +281,7 @@ class GamePlay:
         # print('didnt pruned')
         return max_node_value
 
+
     def min_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
@@ -278,7 +289,7 @@ class GamePlay:
 
         min_node_value = float('inf')
 
-        _, _, available_moves = self.fetch_minimax_game_state(player, initial_board)
+        available_moves = self.fetch_minimax_internal_available_moves(player, initial_board, player_c_f)
 
         for board_piece, moves in available_moves.items():
             for move in moves:
@@ -316,6 +327,7 @@ class GamePlay:
                 # beta = min(beta, node_value)
         # print('didnt pruned')
         return min_node_value
+
 
     def minimax(self, player, depth=2):
         """
@@ -386,6 +398,7 @@ class GamePlay:
         idx = choice(range(len(next_board_piece)))
         return next_board_piece[idx], next_move[idx]
 
+
     def fetch_minimax_game_state(self, player, board):
         if player == 'f':
             player_c_i = deepcopy(self.f_player.fox_collection)
@@ -408,6 +421,23 @@ class GamePlay:
             }
 
         return player_c_i, opp_c_i, available_moves
+
+
+    def fetch_minimax_internal_available_moves(self, player, board, animal_collection):
+        if player == 'f':
+            available_moves = self.f_player.get_fox_available_moves(board, animal_collection, True)
+        else:
+            geese_collection = {k: v for k, v in animal_collection.items() if 'ge' in k}
+            elephant_collection = {k: v for k, v in animal_collection.items() if 'ele' in k}
+
+            available_moves = {
+                **self.g_e_player.get_goose_available_moves(
+                    board, geese_collection, True),
+                **self.g_e_player.get_elephant_available_moves(
+                    board, elephant_collection, True)
+            }
+
+        return available_moves
 
 
 game = GamePlay()
