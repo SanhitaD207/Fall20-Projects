@@ -123,12 +123,17 @@ class GamePlay:
                     ge_piece, ge_move = self.minimax('ge')
 
                     self.g_e_player.move_ai(self.board,
-                                            self.g_e_player.geese_collection if 'ge' in ge_piece else self.g_e_player.elephant_collection,
+                                            self.g_e_player.geese_collection
+                                            if 'ge' in ge_piece else self.g_e_player.elephant_collection,
                                             ge_piece, ge_move)
 
                     remove_dead_foxes_and_elephants(self.board, self.f_player.fox_collection,
                                                     self.g_e_player.elephant_collection)
                     print_board_cell_value(self.board.board)
+
+                self.board.block_region(self.f_player.fox_collection, self.g_e_player.geese_collection,
+                                        self.g_e_player.elephant_collection)
+
             else:
                 print('\n\nGame Winner is - {}'.format(self.is_game_over()))
 
@@ -253,15 +258,8 @@ class GamePlay:
                 for animal in animals_captured:
                     value += self.UTILITY['f'][f'captured_{animal[0]}']
 
-            # TODO - Check if this improves game play
-            # if self.can_capture_goose(board, opp_c_f):
-            #     value += self.UTILITY['f']['can_capture_g']
-            #
-            # if self.can_capture_elephant(board, opp_c_f):
-            #     value += self.UTILITY['f']['can_capture_e']
-
         if value == 0:
-            return -50
+            value += 50
 
         return value * -1
 
@@ -271,7 +269,7 @@ class GamePlay:
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
             return self.calculate_heuristic(initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f)
 
-        max_node_value = float('inf')
+        max_node_value = float('-inf')
 
         available_moves = self.fetch_minimax_internal_available_moves(player, initial_board, player_c_f)
 
@@ -359,12 +357,11 @@ class GamePlay:
         return min_node_value
 
 
-    def minimax(self, player, depth=2):
+    def minimax(self, player):
         """
         Executes the minimax algorithm to find best move.
         Reference - https://github.com/lfpelison/ine5430-gomoku/blob/master/src/minimax.py
         :param player:
-        :param depth:
         :return:
         """
 

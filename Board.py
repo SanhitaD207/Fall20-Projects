@@ -20,6 +20,13 @@ class Board:
 
         self.board = [[BoardCell() for _col in range(self.ncols)] for _row in range(self.nrows)]
 
+        self.board_regions = [
+            [[0, 1], [2, 3, 4]],
+            [[5, 6], [2, 3, 4]],
+            [[2, 3, 4], [0, 1]],
+            [[2, 3, 4], [5, 6]]
+        ]
+
         self.set_invalid_points_on_board()
 
         self.set_foxes_initial_position(fox_collection)
@@ -72,3 +79,31 @@ class Board:
                     self.board[i][j].is_valid_cell = True
 
         print_board_is_valid(self.board)
+
+
+    def check_if_region_empty(self, row_range, col_range):
+
+        for row in row_range:
+            for col in col_range:
+                if self.board[row][col].cell_value:
+                    return False
+
+        return True
+
+
+    def mark_region_invalid(self, row_range, col_range):
+
+        for row in row_range:
+            for col in col_range:
+                self.board[row][col].is_valid_cell = False
+
+
+    def block_region(self, fox_collection, geese_collection, elephant_collection):
+        animal_count = len(fox_collection) + len(geese_collection) + len(elephant_collection)
+
+        if animal_count == 8 or animal_count == 4:
+            for i, value in enumerate(self.board_regions):
+                if self.check_if_region_empty(value[0], value[1]):
+                    self.mark_region_invalid(value[0], value[1])
+                    self.board_regions.pop(i)
+                    break

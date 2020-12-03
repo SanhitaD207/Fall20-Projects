@@ -119,11 +119,11 @@ class FoxPlayer(Player):
         row_final, col_final = board_piece_final_location
         goose_row, goose_col = None, None
         if row_initial == row_final and abs(col_final - col_initial) > 1:
-            print("Fox hopped in row")
+            # print("Fox hopped in row")
             goose_row = row_initial
             goose_col = int((col_initial + col_final) / 2)
         elif col_initial == col_final and abs(row_final - row_initial) > 1:
-            print("Fox hopped in column")
+            # print("Fox hopped in column")
             goose_row = int((row_initial + row_final) / 2)
             goose_col = col_initial
 

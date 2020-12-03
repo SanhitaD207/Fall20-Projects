@@ -122,11 +122,8 @@ def remove_dead_animal(board, row, col, animal_collection):
     for key, value in animal_collection.items():
         if val == value:
             required_key = key
-            # print("Animal found", key)
             break
     animal_collection.pop(required_key, None)
-    # print(animal_collection)
-    # print_board_cell_value(board.board)
 
 
 def remove_dead_foxes_and_elephants(board, fox_collection, elephant_collection):
