@@ -1,27 +1,55 @@
 # Fall20-Projects
-Student final projects from the Fall 2020 semester
 
-Each project from this semester is a public fork linked from this repository.  This is just one of the many assignments students worked on for the course, but this is the *only* one they are permitted to publish openly.
+### Fox, Geese and Elephants
+This project contains scripts for an AI game player for the game - Fox, Geese and Elephant. The game player uses a Minimax algorithm with a heuristic scoring function. 
 
-## Final Project Expectations:
+The board layout is as follows:
+* 1 Foxes
+* 13 Geese
 
-You have considerable flexibility about specifics and you will publish your project openly (as a fork from this project repository) to allow making it part of your portfolio if you choose.  Work alone or in a team of two students. 
-
-Regardless of topic, it must involve notable amounts of original work of your own, though it can of course use existing libraries or be inspired in part by some other published work(s). 
-
-PLAGIARISM IS NOT TOLERATED. From the first commit through all production of documentation and code, it must be crystal clear which, if any, parts of the project were based on or duplicated from any other source(s) all of which must be cited.  This should be so specific that any evaluator can easily see which lines of code are original work and which aren't.  Same for all documentation including images, significant algorithms, etc.
-
-## Example topical ideas from which to choose:
-
-(Making original variations of puzzles and games isn't as difficult as it may seem -- we'll discuss this in class. _Though admittedly, making *good* game variations -- that are well-balanced, strategically interesting, with good replay value_ can take expertise or luck and play-testing with revisions.  I'm not expecting that here, given the short time you have.)
-
-1. Devise your own new _original_ type of logic puzzle or an _original variation_ of existing puzzle type. Your proram should be able to randomly generate many puzzles of your type and to verify that all puzzles generated comply with the standard meta-rule that only one valid solution exists. It needs to output the workable puzzles in a way that a human can print or view them conveniently to try solving them, and support either entering a solution for checking or have the program also display the solution for each puzzle when requested. An interactive UI to also "play" the puzzles after generation is *not* required.
-
-2. OR develop an AI game player for an _original variation_ of some existing strategy game.  If you do this, it needs to be set up so it can either play computer-vs-computer and/or against human players with a reasonable text or graphical UI. 2B. If two teams want to independently develop AI players for the same type of game variant as each other (but using different algorithms, strategies, and/or data structures) so they can compete, that is okay.
-
-3. Computationally 'Solve' a game.  _Background: Some strategic games, especially those of perfect information are known to be "solved". See https://en.wikipedia.org/wiki/Solved_game, which we discussed in class._  Sometimes these proofs are done through mathematical analysis, other times through computational verification. If you choose this option, you can either write your own code or modify some existing code that plays a game, to exhaustively analyze a game to attempt to prove if it is "solved" in this way for certain configurations. Slight changes to rules or conditions of a known game can alter this outcome and require reanalysis.
+![Sample Board](https://github.com/SanhitaD207/Fall20-Projects/blob/main/images/sample-board.png?raw=true)
 
 
+The fox tries to capture the geese by jumping over them and landing on the empty intersection behind the latter (like checkers). The geese try to surround the fox such that the fox is unable to move. The basic movement of all animals are similar, which is moving one step front or back or left or right.
+
+### Variation
+A couple of variations are to be added:
+* First variation is the introduction of elephants. In this variation, 3 geese will be replaced by elephants and the total number of foxes is 2. The elephants will have the movement like that of the rest of the pieces on the board and will assist the geese in capturing the foxes. However, the fox will not be able to jump over an elephant (because the elephant is large). The only way to capture an elephant is by having the two foxes in its periphery.
+* Second variation is marking certain regions on the board invalid when there are fewer pieces on board. This will ensure convergence of the game.
+
+### Data Structures
+**__Classes__**:
+* BoardCell
+* Board
+* Player (base class)
+    * FoxPlayer
+    * GeeseElephantPlayer
+
+**__Structure__**:
+* BoardCell:
+    * _cell_value_ - contains the animal value when filled (E/F/G)
+    * _is_valid_cell_ - contains a boolean value signifying where the cell is in a valid region or not
+
+* Board:
+    * _nrows_: Number of rows
+    * _ncols_: Number of columns
+    * _board_: 2d array of elements (each 1 BoardCell)
+    * _board_regions_: List of lists containing the row range and column range of elements in the upper/lower/left/right outer regions. This list will be used to block a region during game play when there are few pieces on board, so that the game converges.
+
+* Player:
+    * FoxPlayer:
+        * _fox_collection_ : A dictionary containing key value pairs signifying fox positions on the board. For example - `{'fox_1': (3, 2), 'fox_2': (3, 4)}`
+    * GeeseElephantPlayer:
+        * _geese_collection_: A dictionary containing key value pairs signifying geese positions on the board. For example - `{'ge_1': (4, 1), 'ge_2': (4, 2) ...}`
+        * _elephant_collection_: A dictionary containing key value pairs signifying elephant positions on the board. For example - `{'ele_1': (4, 0), 'ele_2': (4, 3), 'ele_3': (4, 6)}`
+ 
+
+### Minimax
+
+#### Heuristic
+
+#### Algorithm
+   
 ## Deliverables and other Requirements:
 
 * Have some fun!
