@@ -55,6 +55,9 @@ class GamePlay:
         elif len(fox_collection) == 1 and len(elephant_collection) > 1:
             return True
 
+        elif len(fox_collection) == len(elephant_collection) == len(geese_collection) == 1:
+            return True
+
         return False
 
 
@@ -75,6 +78,10 @@ class GamePlay:
 
         elif len(self.f_player.fox_collection) == 1 and len(self.g_e_player.elephant_collection) > 1:
             winning_player = "GE"
+
+        elif len(self.f_player.fox_collection) == len(self.g_e_player.elephant_collection) == len(
+                self.g_e_player.geese_collection) == 1:
+            winning_player = 'Draw'
 
         return winning_player
 
@@ -245,6 +252,13 @@ class GamePlay:
 
                 for animal in animals_captured:
                     value += self.UTILITY['f'][f'captured_{animal[0]}']
+
+            # TODO - Check if this improves game play
+            # if self.can_capture_goose(board, opp_c_f):
+            #     value += self.UTILITY['f']['can_capture_g']
+            #
+            # if self.can_capture_elephant(board, opp_c_f):
+            #     value += self.UTILITY['f']['can_capture_e']
 
         if value == 0:
             return -50
