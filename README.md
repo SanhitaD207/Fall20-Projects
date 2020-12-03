@@ -84,6 +84,9 @@ We have assumed the fox-player to start the game. The algorithm for minimax is a
         * If a better score is achieved, the board_piece and move are appended to the `next_board_piece` and `next_move` lists
 * An index number is generated randomly (between 0 and length of the next_move list), and the board_piece and move at that index is returned to the `play_game()` function
 
+### Game Snapshots
+![Game Snapshot](https://github.com/SanhitaD207/Fall20-Projects/blob/main/images/snapshots.png?raw=true)
+
 ### Distribution of work
 
 Sanhita -  Created board and board cell data structure, set up initial board state, game play logic and its methods (like move board piece, remove captured animal)
