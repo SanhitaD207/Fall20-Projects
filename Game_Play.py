@@ -102,8 +102,7 @@ class GamePlay:
         """
         This is the game play function and decides the game play type based on the flag value - 'with_ai'. If
             we provide the flag value as True, then the computer plays versus itself using the minimax algorithm.
-        :param with_ai:
-        :return:
+        :param with_ai: Flag value to choose the game-play type
         """
 
         if not with_ai:
@@ -153,6 +152,13 @@ class GamePlay:
 
     @staticmethod
     def can_capture_goose(board, fox_collection):
+        """
+        This function is called from the `calculate_heuristic` function to check if the fox can capture
+            a goose in its next move
+        :param board: Board state at the minimax stage
+        :param fox_collection: A dictionary containing the fox board pieces and their locations on the board
+        :return: boolean value
+        """
         for value in fox_collection.values():
             row, col = value
             if get_hop_moves(board, row, col):
@@ -163,6 +169,13 @@ class GamePlay:
 
     @staticmethod
     def can_capture_elephant(board, fox_collection):
+        """
+        This function is called from the `calculate_heuristic` function to check if the fox is next to an
+            elephant and can possibly capture it or not
+        :param board: Board state at the minimax stage
+        :param fox_collection: A dictionary containing the fox board pieces and their locations on the board
+        :return: boolean value
+        """
         nrows = board.nrows
         ncols = board.ncols
         for value in fox_collection.values():
@@ -180,6 +193,13 @@ class GamePlay:
 
     @staticmethod
     def can_e_capture_f(board, fox_collection):
+        """
+        This function is called from the `calculate_heuristic` function to check if an elephant is next to a fox
+            and can possibly surround it.
+        :param board: Board state at the minimax stage
+        :param fox_collection: A dictionary containing the fox board pieces and their locations on the board
+        :return: boolean value
+        """
         nrows = board.nrows
         ncols = board.ncols
         for value in fox_collection.values():
@@ -197,9 +217,15 @@ class GamePlay:
 
     @staticmethod
     def can_partially_block_fox(board, fox_collection):
+        """
+        This function is called from the `calculate_heuristic` function to check if the fox is partially blocked
+        :param board: Board state at the minimax stage
+        :param fox_collection: A dictionary containing the fox board pieces and their locations on the board
+        :return: boolean value
+        """
+
         nrows = board.nrows
         ncols = board.ncols
-        # count_blocked_sides = 0
         for value in fox_collection.values():
             count_blocked_sides = 0
             row, col = value
@@ -237,8 +263,6 @@ class GamePlay:
         """
 
         value = 0
-        # print('\nIn Heuristic Calculation\n')
-        # print_board_cell_value(board.board)
         if player == 'f':
             if len(player_c_i.items()) > len(player_c_f.items()):
                 value -= self.UTILITY['g_e']['captured_f']
@@ -277,7 +301,21 @@ class GamePlay:
         return value * -1
 
 
-    def max_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
+    def max_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, d):
+        """
+        This function is the maximizing part of the minimax algorithm. If the depth is reached, then the
+            heuristic calculation function is called, else available moves for the player are fetched. These
+            moves are iterated upon and played and scores compared. After that the next stage (minimize) is
+            entered by calling the min_play function with appropriate parameters.
+        :param initial_board: Board state from the min_play implementation stage of minimax
+        :param player: Either Fox 'f' or GeeseElephant 'g_e'
+        :param player_c_i: Player Collection Initial
+        :param player_c_f: Player Collection Final
+        :param opp_c_i: Opponent Collection Initial
+        :param opp_c_f: Opponent Collection Final
+        :param d: depth reached
+        :return: heuristic value
+        """
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
             return self.calculate_heuristic(initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f)
@@ -314,16 +352,26 @@ class GamePlay:
                 max_node_value = max(max_node_value, self.min_play(board, 'ge' if player == 'f' else 'f',
                                                                    opp_c_i, local_opp_c_f,
                                                                    player_c_i, local_player_c_f,
-                                                                   alpha, beta, d + 1))
-                # if node_value >= beta:
-                #     # print('val:{} move:{}'.format(node_value, move)) # To debug
-                #     return node_value
-                # alpha = max(alpha, node_value)
-        # print('didnt pruned')
+                                                                   d + 1))
+
         return max_node_value
 
 
-    def min_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, alpha, beta, d):
+    def min_play(self, initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f, d):
+        """
+        This function is the minimizing part of the minimax algorithm. If the depth is reached, then the
+            heuristic calculation function is called, else available moves for the player are fetched. These
+            moves are iterated upon and played and scores compared. After that the next stage (maximize) is
+            entered by calling the max_play function with appropriate parameters.
+        :param initial_board: Board state from the max_play implementation stage / entry stage of minimax
+        :param player: Either Fox 'f' or GeeseElephant 'g_e'
+        :param player_c_i: Player Collection Initial
+        :param player_c_f: Player Collection Final
+        :param opp_c_i: Opponent Collection Initial
+        :param opp_c_f: Opponent Collection Final
+        :param d: depth reached
+        :return: heuristic value
+        """
 
         if self.is_game_end_state({**player_c_f, **opp_c_f}) or d >= 2:
             return self.calculate_heuristic(initial_board, player, player_c_i, player_c_f, opp_c_i, opp_c_f)
@@ -360,22 +408,16 @@ class GamePlay:
                 min_node_value = min(min_node_value, self.max_play(board, 'ge' if player == 'f' else 'f',
                                                                    opp_c_i, local_opp_c_f,
                                                                    player_c_i, local_player_c_f,
-                                                                   alpha, beta, d + 1))
-
-                # if node_value <= alpha:
-                #     # print('val:{} move:{}'.format(node_value, move)) # To debug
-                #     return node_value
-                # beta = min(beta, node_value)
-        # print('didnt pruned')
+                                                                   d + 1))
         return min_node_value
 
 
     def minimax(self, player):
         """
-        Executes the minimax algorithm to find best move.
+        Executes the minimax algorithm to find best move for the player.
         Reference - https://github.com/lfpelison/ine5430-gomoku/blob/master/src/minimax.py
-        :param player:
-        :return:
+        :param player: Either Fox 'f' or GeeseElephant 'g_e'
+        :return: board_piece and move
         """
 
         alpha = float('-inf')
@@ -420,9 +462,6 @@ class GamePlay:
 
                 neighbor_value = self.min_play(board, 'ge' if player == 'f' else 'f',
                                                opp_c_i, opp_c_f, player_c_i, player_c_f, alpha, beta, 1)
-                # print('child {}/{}: '.format(i, len(state.available_moves)))
-                # if (node_value == float('-inf') and neighbor_value > node_value) or \
-                #         (abs(neighbor_value) > abs(node_value)):
                 if (player == 'ge' and neighbor_value >= node_value) or \
                         (player == 'f' and neighbor_value <= node_value):
                     if neighbor_value == node_value:
@@ -434,12 +473,17 @@ class GamePlay:
 
                     node_value = neighbor_value
 
-                # alpha = max(alpha, node_value)
         idx = choice(range(len(next_board_piece)))
         return next_board_piece[idx], next_move[idx]
 
 
     def fetch_minimax_game_state(self, player, board):
+        """
+        Fetches the initial animal collections for player and opponent and available moves for the player
+        :param player: Either Fox 'f' or GeeseElephant 'g_e'
+        :param board: Current Board State
+        :return: player animal collection, opponent animal collection and available moves for player
+        """
         if player == 'f':
             player_c_i = deepcopy(self.f_player.fox_collection)
             opp_c_i = deepcopy({
@@ -464,6 +508,15 @@ class GamePlay:
 
 
     def fetch_minimax_internal_available_moves(self, player, board, animal_collection):
+        """
+        Fetches the available moves for a player from a minimax implementation stage.
+        :param player: Either Fox 'f' or GeeseElephant 'g_e'
+        :param board: Current Board State
+        :param animal_collection: Collection of board pieces of the player type for which moves are to be
+            fetched. If player is g_e then the collection contains both geese and elephant
+        :return: Available moves for the player
+        """
+
         if player == 'f':
             available_moves = self.f_player.get_fox_available_moves(board, animal_collection, True)
         else:

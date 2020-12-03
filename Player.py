@@ -1,4 +1,4 @@
-from Helper import get_single_step_moves, get_hop_moves, parse_input_move, print_board_cell_value
+from Helper import get_single_step_moves, get_hop_moves, parse_input_move
 
 
 class Player:
