@@ -35,6 +35,13 @@ class GamePlay:
 
     @staticmethod
     def is_game_end_state(animal_collection):
+        """
+        This function checks if the game end state has reached and returns the boolean value. The utility of this
+            function is in the minimax implementation where we want to call the heuristic calculation function
+            when the game end state has been achieved
+        :param animal_collection: Collection of all board pieces
+        :return: boolean value
+        """
 
         fox_collection = {k: v for k, v in animal_collection.items() if 'fox' in k}
         elephant_collection = {k: v for k, v in animal_collection.items() if 'ele' in k}
@@ -62,22 +69,27 @@ class GamePlay:
 
 
     def is_game_over(self):
+        """
+        This function checks if the game is over and returns the game winner based on certain end conditions
+            pre-decided
+        :return: String value containing the winner type
+        """
 
         winning_player = ''
         if not self.f_player.fox_collection:
-            winning_player = "GE"
+            winning_player = "Geese Elephant Player"
 
         elif not self.g_e_player.geese_collection and not self.g_e_player.elephant_collection:
-            winning_player = "F"
+            winning_player = "Fox Player"
 
         elif len(self.g_e_player.elephant_collection) < 2 and not self.g_e_player.geese_collection:
-            winning_player = "F"
+            winning_player = "Fox Player"
 
         elif len(self.g_e_player.geese_collection) < 4 and not self.g_e_player.elephant_collection:
-            winning_player = "F"
+            winning_player = "Fox Player"
 
         elif len(self.f_player.fox_collection) == 1 and len(self.g_e_player.elephant_collection) > 1:
-            winning_player = "GE"
+            winning_player = "Geese Elephant Player"
 
         elif len(self.f_player.fox_collection) == len(self.g_e_player.elephant_collection) == len(
                 self.g_e_player.geese_collection) == 1:
@@ -88,10 +100,11 @@ class GamePlay:
 
     def play_game(self, with_ai=False):
         """
-
+        This is the game play function and decides the game play type based on the flag value - 'with_ai'. If
+            we provide the flag value as True, then the computer plays versus itself using the minimax algorithm.
+        :param with_ai:
+        :return:
         """
-
-        # Reference  - TictacToe Game from Assignment 4
 
         if not with_ai:
             while not self.is_game_over():
