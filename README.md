@@ -45,7 +45,7 @@ A couple of variations are to be added:
  
 
 ### Minimax
-We will be implementing a minimax algorithm to fetch the best move to be made by a player. The source code has been adapted from the implementation in this [heuristic](https://github.com/lfpelison/ine5430-gomoku/blob/master/src/heuristic.py) and [minimax](https://github.com/lfpelison/ine5430-gomoku/blob/master/src/minimax.py) scripts in the Gomoku game player.
+We have implemented a minimax algorithm to fetch the best move to be made by a player. The source code has been adapted from the implementation in this [heuristic](https://github.com/lfpelison/ine5430-gomoku/blob/master/src/heuristic.py) and [minimax](https://github.com/lfpelison/ine5430-gomoku/blob/master/src/minimax.py) scripts in the Gomoku game player.
 
 #### Heuristic
 We have defined a heuristic to reward the fox with capturing a goose/elephant as well as arriving at a location from where it can capture a goose/elephant in the next move. 
@@ -84,12 +84,11 @@ We have assumed the fox-player to start the game. The algorithm for minimax is a
         * If a better score is achieved, the board_piece and move are appended to the `next_board_piece` and `next_move` lists
 * An index number is generated randomly (between 0 and length of the next_move list), and the board_piece and move at that index is returned to the `play_game()` function
 
-## Deliverables and other Requirements:
+### Distribution of work
 
-* Have some fun!
-* In your own fork, please replace this README.md file's contents with a good introduction to your own project. 
-* Targeted Algorithm Analysis:  Regardless of which option you choose, you need to _describe the important performance characteristics of your program and explain why you chose the data structures and core algorithm(s) you did_. So for example, if you chose Type #1, what's the Big-O run-time complexity of your puzzle solver? Or the puzzle generator? (I've had some students write randomized puzzle generators that could theoretically run infinitely -- we don't want that!)  If you're doing Type #2, what's the complexity of your heuristic evaluation function used for pruning?
+Sanhita -  Created board and board cell data structure, set up initial board state, game play logic and its methods (like move board piece, remove captured animal)
 
-* If your team has more than one student, take efforts to see that each makes git commits. In addition, your README documentation should include a summary of how you shared the work.
-* Recorded video or live in-class presentation of your work. 
+Adarsh - Created player data structure and its methods (like get available moves), helper functions (get single step move, get hop move),minimax algorithm
+
+Equally split - Heuristic function optimization, documentation (README, presentation), docstrings
 
