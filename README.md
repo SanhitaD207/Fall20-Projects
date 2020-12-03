@@ -45,11 +45,45 @@ A couple of variations are to be added:
  
 
 ### Minimax
+We will be implementing a minimax algorithm to fetch the best move to be made by a player. The source code has been adapted from the implementation in this [heuristic](https://github.com/lfpelison/ine5430-gomoku/blob/master/src/heuristic.py) and [minimax](https://github.com/lfpelison/ine5430-gomoku/blob/master/src/minimax.py) scripts in the Gomoku game player.
 
 #### Heuristic
+We have defined a heuristic to reward the fox with capturing a goose/elephant as well as arriving at a location from where it can capture a goose/elephant in the next move. 
+Similarly we have reward the GeeseElephantPlayer for capturing a fox or arriving at a position from where it can either partially block a fox or if an elephant can capture a fox.
+All neutral moves are given the same points - 50.
+
+This heuristic is used for the scoring part of the minimax algorithm.
+
+```
+{
+    'f': {
+        'captured_e': 500,
+        'captured_g': 250,
+        'can_capture_e': 300,
+        'can_capture_g': 200
+    },
+    'g_e': {
+        'captured_f': 500,
+        'partial_blocked_f': 250,
+        'e_can_capture_f': 250
+    }
+}
+```
 
 #### Algorithm
-   
+We have assumed the fox-player to start the game. The algorithm for minimax is as follows:
+* Fetch available moves for the player:
+* Iterate over the moves to fetch scores using the heuristic:
+    * A move is played and the `min_play()` function is called
+    * The available moves for the other player are fetched and are iterated for calculating the scores:
+        * A move is played and the `max_play()` function is called.
+        * We have restricted the depth for minimax to 2, so the heuristic calculation function is called in `max_play()`
+        * Score is compared with a `min_node_value`
+        * At the end of iteration, `min_node_value` is returned
+    * Score is compared with a `node_value`
+        * If a better score is achieved, the board_piece and move are appended to the `next_board_piece` and `next_move` lists
+* An index number is generated randomly (between 0 and length of the next_move list), and the board_piece and move at that index is returned to the `play_game()` function
+
 ## Deliverables and other Requirements:
 
 * Have some fun!
