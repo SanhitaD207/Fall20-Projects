@@ -1,6 +1,3 @@
-from Helper import print_board_is_valid, print_board_cell_value
-
-
 class BoardCell:
 
     def __init__(self, cell_value=None):
@@ -8,16 +5,11 @@ class BoardCell:
         self.is_valid_cell = True
 
 
-    def reset_is_valid(self):
-        self.is_valid_cell = False
-
-
 class Board:
 
     def __init__(self, fox_collection, geese_collection, elephant_collection):
         self.nrows = 7
         self.ncols = 7
-
         self.board = [[BoardCell() for _col in range(self.ncols)] for _row in range(self.nrows)]
 
         self.board_regions = [
@@ -28,23 +20,26 @@ class Board:
         ]
 
         self.set_invalid_points_on_board()
-
         self.set_foxes_initial_position(fox_collection)
         self.set_elephant_initial_position(elephant_collection)
         self.set_geese_initial_position(geese_collection)
 
-
     def set_foxes_initial_position(self, fox_collection):
+        """
+        Used to set the initial positions of the foxes on the board and updates these coordinates in the fox collection.
+        :param fox_collection: A dictionary containing the fox board pieces and their locations on the board
+        """
         self.board[3][2].cell_value = 'F'
         fox_collection['fox_1'] = (3, 2)
 
         self.board[3][4].cell_value = 'F'
         fox_collection['fox_2'] = (3, 4)
 
-        print_board_cell_value(self.board)
-
-
     def set_elephant_initial_position(self, elephant_collection):
+        """
+        Used to set the initial positions of the elephants on the board and updates these coordinates in the elephant collection.
+        :param elephant_collection: A dictionary containing the elephant board pieces and their locations on the board
+        """
         self.board[4][0].cell_value = 'E'
         elephant_collection['ele_1'] = (4, 0)
 
@@ -54,10 +49,11 @@ class Board:
         self.board[4][3].cell_value = 'E'
         elephant_collection['ele_3'] = (4, 3)
 
-        print_board_cell_value(self.board)
-
-
     def set_geese_initial_position(self, geese_collection):
+        """
+        Used to set the initial positions of the geese on the board and updates these coordinates in the geese collection.
+        :param geese_collection: A dictionary containing the geese board pieces and their locations on the board
+        """
         count = 1
         for i in range(4, self.nrows, 1):
             for j in range(self.ncols):
@@ -66,11 +62,11 @@ class Board:
                     geese_collection['ge_{}'.format(count)] = (i, j)
                     count += 1
 
-        print_board_cell_value(self.board)
-
-
     def set_invalid_points_on_board(self):
-
+        """
+        Used to set the unnecessary cells on the board as invalid. These invalid cells cannot be used by the board pieces
+        for their movement.
+        """
         for i in range(self.nrows):
             for j in range(self.ncols):
                 if (i < 2 or i > 4) and (j < 2 or j > 4):
@@ -78,10 +74,14 @@ class Board:
                 else:
                     self.board[i][j].is_valid_cell = True
 
-        print_board_is_valid(self.board)
-
-
     def check_if_region_empty(self, row_range, col_range):
+        """
+        Checks if any board piece is present in the cells covered by the row and column range. If any piece is found in
+        the region then return False, True otherwise.
+        :param row_range: List of integers denoting the row coordinates
+        :param col_range: List of integers denoting the column coordinates
+        :return: Boolean value indicating whether the region is empty
+        """
 
         for row in row_range:
             for col in col_range:
@@ -90,15 +90,24 @@ class Board:
 
         return True
 
-
     def mark_region_invalid(self, row_range, col_range):
+        """
+        Sets the is_valid_cell parameter of all cells in given range of row and column as False, making them invalid.
+        :param row_range: List of integers denoting the row coordinates
+        :param col_range: List of integers denoting the column coordinates
+        """
 
         for row in row_range:
             for col in col_range:
                 self.board[row][col].is_valid_cell = False
 
-
     def block_region(self, fox_collection, geese_collection, elephant_collection):
+        """
+        Sets a region on the board as invalid if no board pieces exist in that region.
+        :param fox_collection: A dictionary containing the fox board pieces and their locations on the board
+        :param geese_collection: A dictionary containing the geese board pieces and their locations on the board
+        :param elephant_collection: A dictionary containing the elephant board pieces and their locations on the board
+        """
         animal_count = len(fox_collection) + len(geese_collection) + len(elephant_collection)
 
         if animal_count == 8 or animal_count == 4:
