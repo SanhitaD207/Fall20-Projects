@@ -461,7 +461,7 @@ class GamePlay:
                     player_c_f = {**geese_collection, **elephant_collection}
 
                 neighbor_value = self.min_play(board, 'ge' if player == 'f' else 'f',
-                                               opp_c_i, opp_c_f, player_c_i, player_c_f, alpha, beta, 1)
+                                               opp_c_i, opp_c_f, player_c_i, player_c_f, 1)
                 if (player == 'ge' and neighbor_value >= node_value) or \
                         (player == 'f' and neighbor_value <= node_value):
                     if neighbor_value == node_value:
