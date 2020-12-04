@@ -84,14 +84,40 @@ We have assumed the fox-player to start the game. The algorithm for minimax is a
         * If a better score is achieved, the board_piece and move are appended to the `next_board_piece` and `next_move` lists
 * An index number is generated randomly (between 0 and length of the next_move list), and the board_piece and move at that index is returned to the `play_game()` function
 
+### Time Complexity Analysis
+
+The following calculations are performed for the minimax algorithm of depth = 2.
+
+In the worst case scenario each board piece has 4 moves available. Therefore, from the total combinations tested for best move = 13 * 4 * 2 * 4 = 416 where total geese/elephant pieces are 13 and fox pieces are 2.
+However, in most cases all the board pieces cannot move in all four directions and the board pieces also get eliminated. 
+So on an average we can assume that 7 of the geese/elephant player has board pieces that have 2 possible moves each, and that the fox player has 3 available moves for each fox.
+This way for an average case combinations tried are - 7 * 2 * 2 * 3 = 84
+
+Most of the calculations in the heuristic function involve constant time but the part where the code tries to identify the captured animal requires O(n) time. Thus the heuristic function has time complexity of O(n) where n is number of animals in the animal collection. 
+
+Therefore the time complexities are as follows: 
+* _Average_ - O(3m * 2n * m) or O(2n * 3m * n) 
+    * m is the number of fox-pieces and n is the number of geese/elephant pieces, fox having 3 moves each and geese/elephant having 2 moves each
+    * a fox or geese/elephant being captured in each move is the reason for the additional m or n factor
+* _Worst_ - O(4m * 4n * m) or O(4n * 4m * n)
+    * m is the number of fox-pieces and n is the number of geese/elephant pieces, fox having 4 moves each and geese/elephant having 4 moves each
+    * a fox or geese/elephant being captured in each move is the reason for the additional m or n factor
+    
+    
 ### Game Snapshots
 ![Game Snapshot](https://github.com/SanhitaD207/Fall20-Projects/blob/main/images/snapshots.png?raw=true)
 
-### Distribution of work
+### Distribution of work by Contributors
 
-Sanhita -  Created board and board cell data structure, set up initial board state, game play logic and its methods (like move board piece, remove captured animal)
+* _Sanhita Dhamdhere (sanhita2)_ -  Created board and board cell data structure, set up initial board state, game play logic and its methods (like move board piece, remove captured animal)
 
-Adarsh - Created player data structure and its methods (like get available moves), helper functions (get single step move, get hop move),minimax algorithm
+* _Adarsh Agarwal (adarsha2)_ - Created player data structure and its methods (like get available moves), helper functions (get single step move, get hop move),minimax algorithm
 
-Equally split - Heuristic function optimization, documentation (README, presentation), docstrings
+* _Equally split_ - Heuristic function optimization, documentation (README, presentation), docstrings
+
+### References
+
+- https://github.com/lfpelison/ine5430-gomoku/blob/master/src/minimax.py
+- https://bonaludo.com/2015/09/05/halatafl-or-fox-and-geese/
+- Game play – TicTacToe (Assignment 4) game play logic
 

@@ -126,6 +126,7 @@ class GamePlay:
 
             while not self.is_game_over():
                 fox_piece, fox_move = self.minimax('f')
+
                 print('Fox move made')
                 dead_goose_row, dead_goose_col = self.f_player.move_ai(self.board, self.f_player.fox_collection,
                                                                        fox_piece, fox_move)
