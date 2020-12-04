@@ -145,7 +145,7 @@ def print_board_cell_value(board):
             else:
                 print(board[i][j].cell_value if board[i][j].cell_value else '_', end='\t')
         print('')
-    print('')
+    print('\n\n')
 
 
 def parse_input_move(move):

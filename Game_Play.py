@@ -121,8 +121,12 @@ class GamePlay:
             else:
                 print('\n\nGame Winner is - {}'.format(self.is_game_over()))
         else:
+
+            print_board_cell_value(self.board.board)
+
             while not self.is_game_over():
                 fox_piece, fox_move = self.minimax('f')
+                print('Fox move made')
                 dead_goose_row, dead_goose_col = self.f_player.move_ai(self.board, self.f_player.fox_collection,
                                                                        fox_piece, fox_move)
                 if dead_goose_row:
@@ -133,7 +137,7 @@ class GamePlay:
                 print_board_cell_value(self.board.board)
                 if not self.is_game_over():
                     ge_piece, ge_move = self.minimax('ge')
-
+                    print('Geese/Elephant move made')
                     self.g_e_player.move_ai(self.board,
                                             self.g_e_player.geese_collection
                                             if 'ge' in ge_piece else self.g_e_player.elephant_collection,
